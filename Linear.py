@@ -1,27 +1,38 @@
 import numpy as np
+import sys
 
 class Linear:
 
-    #set initial parameter values
+    # set initial parameter values
 
-    def __init__(self,  m, c):
+    def __init__(self,  m = 1.0, c = 1.0):
         self.m = m
         self.c = c
 
 
-    #method to set parameters from a matrix
-    @staticmethod
-    def setParameters(self, *param):
+    # method to set parameters from a matrix
+    def setParameters(self,parameters):
 
-        m = param[0]
-        c = param[1]
+        if (len(parameters) != 2):
 
-    
-    #evaluate function for given parameters
-    def evaluate(self, x):
+            print("WARNING: TOO MANY PARAMETERS, PARAMETERS NOT SET!")
+
+        elif (type(parameters) is list):
+
+            self.m = parameters[0]
+            self.c = parameters[1]
+
+        elif (type(parameters) is np.matrix):
+
+            self.m = parameters.item(0)
+            self.c = parameters.item(1)
+
+        else :
+            raise TypeError("Unexpected parameter type, parameters not set.")
+
+
+
+    # evaluate function for given parameters
+    def Evaluate(self, x):
 
         return((self.m*x)+self.c)
-        
-
-    #evaluate function for given matrix
-    #def evaluateMatrix(*vector)
