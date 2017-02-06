@@ -9,7 +9,7 @@ class MuonPdf():
 
     # initialise muon pdf with lifetime tau
 
-    def __init__(self, tau = 0.0):
+    def __init__(self, tau = 2.2):
 
         self.tau = tau
         self.normalisation = 1.0/self.tau
