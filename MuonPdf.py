@@ -5,33 +5,37 @@ import matplotlib.pyplot as plt
 import numpy as np
 import random
 
-class GaussianPdf():
+class MuonPdf():
 
-    # initialise with mean and sigma (width)
+    # initialise muon pdf with lifetime tau
 
-    def __init__(self, mean = 0.0, sigma = 5.0):
+    def __init__(self, tau = 0.0):
 
-        self.mean = mean
-        self.sigma = sigma
-        self.normalisation = 1.0/(self.sigma * math.sqrt(2.0*math.pi))
+        self.tau = tau
+        self.normalisation = 1.0/self.tau
         
 
+        # function to evaluate the pdf at point t_point
        
-    def evaluateGaussian(self, x_point):
+    def evaluateMuonPdf(self, t_point):
 
-        result = self.normalisation * np.exp(-0.5 * ((x_point - self.mean)/self.sigma)**2) 
+        result = self.normalisation * np.exp((-1.0*t_point)/self.tau)
         
-    
         return result
+
+        # function gives the max of pdf 
 
     def fmax(self):
 
-        fmax = self.evaluateGaussian(self.mean)
+        fmax = self.evaluateMuonPdf(0.0)
 
         return fmax
+        
+        # function to generate random number from exponential pdf. 
 
-    def pullRandGauss(self, lower_bound = -5.0, upper_bound = 5.0):
+    def pullRandMuon(self, upper_bound = 20.0):
 
+        lower_bound = 0.0
         evaluated_random = 0.0
         scaled_random = 0.0
         random_point = 1.0
@@ -40,7 +44,7 @@ class GaussianPdf():
 
             random_x = np.random.uniform()
             scaled_random_x = lower_bound + (upper_bound - lower_bound)*random_x
-            evaluated_random = self.evaluateGaussian(scaled_random_x)
+            evaluated_random = self.evaluateMuonPdf(scaled_random_x)
         
             random_point = np.random.uniform()*self.fmax()
         
