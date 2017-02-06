@@ -7,7 +7,7 @@ import random
 
 class MuonPdf():
 
-    # initialise muon pdf with lifetime tau
+    # Initialise muon pdf with lifetime tau.
 
     def __init__(self, tau = 2.2):
 
@@ -15,7 +15,7 @@ class MuonPdf():
         self.normalisation = 1.0/self.tau
         
 
-        # function to evaluate the pdf at point t_point
+        # Function to evaluate the pdf at point t_point.
        
     def evaluateMuonPdf(self, t_point):
 
@@ -23,7 +23,7 @@ class MuonPdf():
         
         return result
 
-        # function gives the max of pdf 
+        # Function gives the max of pdf.
 
     def fmax(self):
 
@@ -31,7 +31,7 @@ class MuonPdf():
 
         return fmax
         
-        # function to generate random number from exponential pdf. 
+        # Function to generate random number from exponential pdf. 
 
     def pullRandMuon(self, upper_bound = 20.0):
 
@@ -52,32 +52,7 @@ class MuonPdf():
         return scaled_random_x
 
     
-    def integralNumeric(self, lower_limit= -5.0, upper_limit = 5.0):
 
-        #create triangle as area
-        #base = upper_limit - lower_limit
-        #height = self.fmax() + 1.0
-        #area = 0.5*base*height
-
-        #random_point = np.random.uniform()*(upper_limit-lower_limit) + lower_limit
-
-        point_l_x = lower_limit - 1.0
-        point_l_y = 0.0
-        
-        point_c_x = (np.mod(upper_limit)+np.mod(lower_limit))/2.0
-        point_c_y = self.fmax() + 1.0
-
-        point_r_x = upper_limit + 1.0
-        point_r_y = 0.0
-
-        triangle_point = 0.0
-        #if (random_point <= height):
-         #   triangle_point = height - np.absolute(random_point)
-
-        # return triangle_point
-
-        #else:
-         #   return triangle_point
         
 
         
