@@ -19,7 +19,7 @@ def main():
 #    print("Value of function at {0} is {1}".format(exponentials[0][0], exponentials[0]))
 
 
-    polynomial_ode = PolynomialODE([1.0, -6.0, 3.0])
+    polynomial_ode = PolynomialODE([1.0])
 
 
     #print(polynomial_ode.first_derivative([1.0,1.0]))

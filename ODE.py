@@ -6,19 +6,19 @@ import math
 class ExponentialODE():
 
     def __init__(self, _k = 1.0):
-        
-        self.k = _k 
-        
+
+        self.k = _k
+
         self.initial_x = 0.0
 
         self.initial_coordinate = [self.initial_x, self.exact_solution(self.initial_x)]
 
-    
+
     # Calculate numerical value of the first derivative
-    
+
     def first_derivative(self, coordinates):
         return self.k * coordinates[1]
-        
+
 
     def initial_value(self):
         return self.initial_coordinate
@@ -41,7 +41,7 @@ class PolynomialODE():
     # Calculate numerical value of derivative at given x
 
     def first_derivative(self, coordinates):
-        
+
         derivative = 0.0
 
         # Calculate derivative by looping through coefficients.
@@ -62,13 +62,13 @@ class PolynomialODE():
     # Function to calculate the exact solution.
     # Uses similar method to first_derivative.
     # Loops over powers of and increments derivative value, starting with zeroth power.
-    
+
     def exact_solution(self, x):
 
         value = 0.0
 
         for power in range(len(self.coefficients)):
-            
+
             value += self.coefficients[power] * np.power(x, float(power))
 
         return value
@@ -87,11 +87,38 @@ class SinusoidalODE():
     def first_derivative(self, coordinates):
         return self.k * math.cos(self.k * coordinates[0])
 
-        
+
     def initial_value(self):
         return self.initial_coordinate
-        
+
 
     def exact_solution(self, x):
         return math.sin(self.k * x)
-        
+
+# Class to handle top hat functions
+
+class TopHatODE():
+
+    def __init__(self, _height = 1.0, _width = 1.0, _center = 0.0):
+
+        self.height = _height
+        self.width = _width
+        self.center = _center
+
+    def first_derivative(self, coordinates):
+
+        half_width = self.width/2.0
+
+        boxcar = self.height * (0.5*(1+np.sign(coordinates[0]-(self.center-half_width)))
+        - 0.5*(1+np.sign(coordinates[0]-(self.center+half_width))))
+
+        return boxcar
+
+    def evaluate(self, x):
+
+        half_width = self.width/2.0
+
+        boxcar = self.height * (0.5*(1+np.sign(x-(self.center-half_width)))
+        - 0.5*(1+np.sign(x-(self.center+half_width))))
+
+        return boxcar
