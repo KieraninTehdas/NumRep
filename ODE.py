@@ -105,6 +105,10 @@ class TopHatODE():
         self.width = _width
         self.center = _center
 
+
+        self.initial_x = self.center - (self.width/2.0)
+        self.initial_coordinate = [self.initial_x, 0.0]
+
     def first_derivative(self, coordinates):
 
         half_width = self.width/2.0
@@ -114,11 +118,57 @@ class TopHatODE():
 
         return boxcar
 
+    def initial_value(self):
+        return self.initial_coordinate
+
+
+    def set_boundary_point(self, point):
+        self.initial_x = point[0]
+        self.initial_coordinate = [self.initial_x, point[1]]
+        
+
     def evaluate(self, x):
 
         half_width = self.width/2.0
 
-        boxcar = self.height * (0.5*(1+np.sign(x-(self.center-half_width)))
-        - 0.5*(1+np.sign(x-(self.center+half_width))))
-
+        boxcar = self.height * 0.5*((1+np.sign(x-(self.center-half_width)))
+        - 1.5*(1+np.sign(x-(self.center+half_width))))
+       
+    
         return boxcar
+
+
+class pn_junction(): 
+
+    def __init__(self, _height= 1.0, _width = 2.0, _center = 2.0):
+
+
+        self.height = _height
+        self.width = _width
+        self.center = _center
+
+
+        self.initial_coordinate = [0.0,0.0]
+
+    def first_derivative(self, coordinates):
+
+        half_width = self.width/2.0
+
+        print("Centre = {0}, width = {1}, height = {2}".format(self.center, self.width, self.height))
+
+        charge_distribution = 0
+        #x = coordinates[0]
+        x = coordinates
+        print("Point: {0}".format(x))
+        if ((x > (self.center-half_width)) and (x < self.center)):
+            charge_distribution = self.height
+            print("1-2: {0}".format(charge_distribution))
+        if ((x > self.center) and (x < (self.center+half_width))):
+            charge_distribution = -1.0*self.height
+            print("2-3: {0}".format(charge_distribution))
+            
+        return charge_distribution
+
+
+    def initial_value(self):
+        return self.initial_coordinate
