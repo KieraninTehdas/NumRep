@@ -1,30 +1,59 @@
 from ODE import *
-from Coordinates import *
 import matplotlib.pyplot as plt
 import numpy as np
 from Integrator import *
+from operator import sub
 
 def main():
 
-    top_hat = TopHatODE(1, 1, 1.5)
-    top_hat2 = TopHatODE(-1,1, 2.5)
+    charge_distribution = pn_junction()
 
-    x1 = [i*0.1 for i in range (0,20)]
-    y1 = [top_hat.evaluate(x1[i]) for i in range (len(x1))]
-    #print("{0}, {1}".format(x,y))
+    coordinates = [[i*0.01,0] for i in range (0,401)]
+    x = [i*0.01 for i in range (0,401)]
+    y = [charge_distribution.first_derivative(coordinates[i]) for i in range (len(coordinates))]
 
-    x2 = [i*0.1 for i in range (20,40)]
-    y2 = [top_hat2.evaluate(x2[i]) for i in range (len(x2))]
 
-    x = x1+x2
-    y = y1+y2
-    charge_distribution = zip(x,y)
+    electric_field_exact_y = [charge_distribution.exact_solution(x[i]) for i in range (len(x))]
+    electric_field_exact = zip(x, electric_field_exact_y)
+    #print(electric_field_exact)
+    electric_field_euler = integrate(charge_distribution, 20, 0.2, euler_method)
+    electric_field_rk2 = integrate(charge_distribution, 20, 0.2, rk2_method)
+    electric_field_rk4 = integrate(charge_distribution, 20, 0.2, rk4_method)
 
-    #electric_field1 = integrate(top_hat, ) 
+    #euler_y = [b for a,b in electric_field_euler]
+    #rk2_y = [b for a,b in electric_field_rk2]
+    #rk4_y = [b for a,b in electric_field_rk4]
+    #residual_euler = [a-b for a,b in zip(electric_field_exact_y, euler_y)]
+    #residual_rk2 = [a-b for a,b in zip(electric_field_exact_y, rk2_y)]
+    #residual_rk4 = [a-b for a,b in zip(electric_field_exact_y, rk4_y)]
+
+
 
     plt.figure(1)
 
-    #plt.subplot(311)
-    plt.scatter(*zip(*charge_distribution))
+    plt.subplot(411)
+    plt.scatter(x,y)
+
+    plt.subplot(412)
+    plt.scatter(*zip(*electric_field_euler))
+    plt.plot(*zip(*electric_field_exact))
+
+    plt.subplot(413)
+    plt.scatter(*zip(*electric_field_rk2))
+    plt.plot(*zip(*electric_field_exact))
+
+    plt.subplot(414)
+    plt.scatter(*zip(*electric_field_rk4))
+    plt.scatter(*zip(*electric_field_exact), marker = 'x')
+
     plt.show()
+'''
+    plt.subplot(515)
+    plt.scatter(x,residual_euler, marker ='v')
+    plt.scatter(x,residual_rk2, marker ='v', color = 'g')
+    plt.scatter(x,residual_rk4, marker ='v', color = 'y')
+'''
+
+
+
 main()

@@ -105,20 +105,231 @@ class TopHatODE():
         self.width = _width
         self.center = _center
 
+
+        self.initial_x = 0.0
+        self.initial_coordinate = [self.initial_x, 0.0]
+
     def first_derivative(self, coordinates):
 
         half_width = self.width/2.0
+        x = coordinates[0]
 
-        boxcar = self.height * (0.5*(1+np.sign(coordinates[0]-(self.center-half_width)))
-        - 0.5*(1+np.sign(coordinates[0]-(self.center+half_width))))
+        #if ((x > self.center-half_width) and (x < self.center+half_width)):
+    #        tophat = self.height
+#        elif ((x == self.center-half_width) or (x == self.center+half_width)):
+            #tophat = self.height/2.0
 
-        return boxcar
+    #    else:
+    #        tophat = 0.0
+
+        tophat = 0.0
+
+        if (x < self.center-half_width):
+            tophat = 0.0
+        if ((x >= self.center-half_width) and (x < self.center+half_width)):
+            tophat = self.height
+        if (x >= self.center+half_width):
+            tophat = 0.0
+
+        if ((x == self.center-half_width) or (x == self.center+half_width)):
+            tophat = self.height/2.0
+
+        #if (x == self.center-half_width):
+        #    tophat = self.height/2.0
+
+        #if (x == self.center+half_width):
+        #    tophat = half.height/2.0
+
+        return tophat
+
+    def initial_value(self):
+        return self.initial_coordinate
+
+
+    def set_initial_coordinate(self, point):
+        self.initial_x = point[0]
+        self.initial_coordinate = [self.initial_x, point[1]]
+
 
     def evaluate(self, x):
 
         half_width = self.width/2.0
 
-        boxcar = self.height * (0.5*(1+np.sign(x-(self.center-half_width)))
-        - 0.5*(1+np.sign(x-(self.center+half_width))))
+        if ((x > self.center-half_width) and (x < self.center+half_width)):
+            tophat = self.height
 
-        return boxcar
+
+        else:
+            tophat = 0.0
+
+
+        return tophat
+
+    def exact_solution(self, x):
+
+        half_width = self.width/2.0
+
+        y = 0
+
+        if (x < self.center - half_width):
+            y = 0
+
+        if ((x > self.center - half_width) and (x < self.center + half_width)):
+            y = self.height*x - (self.height*(self.center-half_width))
+
+        if (x >= self.center + half_width):
+            y = self.height
+
+
+
+
+        return y
+
+
+class pn_junction():
+
+    def __init__(self, _height= 1.0, _width = 2.0, _center = 2.0):
+
+
+        self.height = _height
+        self.width = _width
+        self.center = _center
+
+
+        self.initial_coordinate = [0.0,0.0]
+
+
+
+    def first_derivative(self, coordinates):
+
+        half_width = self.width/2.0
+
+        #print("Centre = {0}, width = {1}, height = {2}".format(self.center, self.width, self.height))
+
+        charge_distribution = 0
+        x = coordinates[0]
+
+        #print("Point: {0}".format(x))
+
+        if ((x > (self.center-half_width)) and (x < self.center)):
+            charge_distribution = self.height
+
+            #print("1-2: {0}".format(charge_distribution))
+
+        if ((x > self.center) and (x < (self.center+half_width))):
+            charge_distribution = -1.0*self.height
+
+        if ((x == self.center - half_width) or (x == self.center+half_width)):
+            charge_distribution = 0.5
+
+            #print("2-3: {0}".format(charge_distribution))
+
+        return charge_distribution
+
+
+    def initial_value(self):
+        return self.initial_coordinate
+
+    def evaluate(self, x):
+
+        half_width = self.width/2.0
+
+        #print("x = :".format(x))
+
+        y = 0
+
+        if ((x > (self.center-half_width)) and (x < self.center)):
+            y = self.height
+
+            #print("1-2: {0}".format(y))
+
+        if ((x > self.center) and (x < (self.center+half_width))):
+            y = -1.0*self.height
+
+        if ((x == self.center-half_width) or x == self.center+half_width):
+            y = 0.5
+
+            #print("2-3: {0}".format(y))
+
+        return y
+
+    def exact_solution(self, x):
+
+        half_width = self.width/2.0
+
+        y = 0.0
+
+        if ((x > (self.center-half_width)) and (x < self.center)):
+
+            y = x - (self.center-half_width)
+
+        if (x == self.center):
+
+            y = self.height
+
+        if ((x > self.center) and (x < self.center + half_width)):
+
+            y = (-1.0 * x) + (self.center+half_width)
+
+
+        return y
+
+
+class HeavisideFunction():
+
+    def __init__(self, _discontinuity = 0.0 , _height = 1.0):
+
+        self.discontinuity = _discontinuity
+        self.height = _height
+        self.initial_coordinate = [0.0,0.0]
+
+    def first_derivative(self, coordinates):
+
+        x = coordinates[0]
+
+        if (x < self.discontinuity):
+            y = 0.0
+
+        if (x > self.discontinuity):
+            y = self.height
+
+        if (x == self.discontinuity):
+            y = self.height/2.0
+
+        return y
+
+
+    def initial_value(self):
+        return self.initial_coordinate
+
+
+    def set_initial_coordinate(self, new_coordinate):
+        self.initial_coordinate = new_coordinate
+
+
+
+class DiscreteFunction():
+
+    def __init__(self, _points):
+
+        self.points = _points
+        #self.initial_coordinate = [0,0]
+
+    def first_derivative(self, coordinates, i =[0]):
+
+
+        print i[0]
+        coordinates = self.points
+        #print("COORDINATES: {0}".format(coordinates))
+        y = coordinates[i[0]][1]
+        print("Y::::{0}".format(y))
+        i[0]+=1
+        #print("LEN COORD: {0}".format(len(coordinates)))
+        if (i[0] == len(coordinates)):
+            i[0]=0
+            print("REACHED END")
+
+        return y
+
+    def initial_value(self):
+        return self.points[0]
