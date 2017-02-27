@@ -1,6 +1,9 @@
 import numpy as np
 import math
 
+# This module contains classes that define functions as ODEs so they can be integrated.
+# Contains classes for exponentials, polynomials, sinusoidals, top hats, Heavisides, discrete functions, and one-offs!
+
 # Class for dealing with exponential ODEs of the form y= exp(kx), such that dy/dx= ky
 
 class ExponentialODE():
@@ -99,6 +102,9 @@ class SinusoidalODE():
 
 class TopHatODE():
 
+    # Initialise with given height, width, and center point.
+    # If no arguments, defaults to 1,1,0
+
     def __init__(self, _height = 1.0, _width = 1.0, _center = 0.0):
 
         self.height = _height
@@ -109,20 +115,24 @@ class TopHatODE():
         self.initial_x = 0.0
         self.initial_coordinate = [self.initial_x, 0.0]
 
+
+    # Define the first derivative as the function, using piecewise funtions.
+
     def first_derivative(self, coordinates):
 
         half_width = self.width/2.0
-        x = coordinates[0]
+        x = coordinates[0] # Get the x component from the coordinate in the form [x,y]
 
-        #if ((x > self.center-half_width) and (x < self.center+half_width)):
-    #        tophat = self.height
-#        elif ((x == self.center-half_width) or (x == self.center+half_width)):
-            #tophat = self.height/2.0
+        #tophat = 0.0 # Value of y at given x
 
-    #    else:
-    #        tophat = 0.0
+        # Returns 0 if outside tophat region
+        # Returns height if within tophat region
+        # Returns half the height if at the discontinuity
 
-        tophat = 0.0
+        if ((x > self.center-half_width) and (x < self.center+half_width)):
+            return  self.height
+        else:
+            return 0.0
 
         if (x < self.center-half_width):
             tophat = 0.0
@@ -134,22 +144,25 @@ class TopHatODE():
         if ((x == self.center-half_width) or (x == self.center+half_width)):
             tophat = self.height/2.0
 
-        #if (x == self.center-half_width):
-        #    tophat = self.height/2.0
 
-        #if (x == self.center+half_width):
-        #    tophat = half.height/2.0
 
-        return tophat
+        #return tophat
+
+    # Function to return the initial coordinates of the function (boundary cond.)
 
     def initial_value(self):
         return self.initial_coordinate
 
 
+    # Function to set initial coordinate if required.
+
     def set_initial_coordinate(self, point):
         self.initial_x = point[0]
         self.initial_coordinate = [self.initial_x, point[1]]
 
+
+    # Function to evaluate the tophat function.
+    # Useful for drawing the original function or testing how it looks.
 
     def evaluate(self, x):
 
@@ -165,11 +178,18 @@ class TopHatODE():
 
         return tophat
 
+
+    # Function to return the exact solution of the integral of the top hat.
+
     def exact_solution(self, x):
 
         half_width = self.width/2.0
 
         y = 0
+
+        # Return constant (0) if x < top hat region
+        # Return appropriate ramp function within top hat region
+        # Return constant (height) if x > top hat region
 
         if (x < self.center - half_width):
             y = 0
@@ -181,9 +201,119 @@ class TopHatODE():
             y = self.height
 
 
+        return y
 
+# Class to create Heaviside functions for integrtion. Similar to half a top hat.
+
+class HeavisideFunction():
+
+    # Initialise with position of discontinuity and height of step.
+
+    def __init__(self, _discontinuity = 0.0 , _height = 1.0):
+
+        self.discontinuity = _discontinuity
+        self.height = _height
+        self.initial_coordinate = [0.0,0.0]
+
+    def first_derivative(self, coordinates):
+
+        x = coordinates[0]
+
+        if (x < self.discontinuity):
+            return 0.0
+
+        if (x > self.discontinuity):
+            return self.height
+
+        if (x == self.discontinuity):
+            return self.height/2.0
+
+
+
+
+    def initial_value(self):
+        return self.initial_coordinate
+
+
+    def set_initial_coordinate(self, new_coordinate):
+        self.initial_coordinate = new_coordinate
+
+    def evaluate(self, x):
+
+
+        if (x < self.discontinuity):
+            y = 0.0
+
+        if (x > self.discontinuity):
+            y = self.height
+
+        if (x == self.discontinuity):
+            y = self.height/2.0
 
         return y
+
+
+    # Function to return the exact solution of the integral of the top hat.
+
+    def exact_solution(self, x):
+
+
+
+        # Return constant (0) if x < top hat region
+        # Return appropriate ramp function within top hat region
+        # Return constant (height) if x > top hat region
+
+        if (x < self.discontinuity):
+            return 0.0
+
+        if (x >= self.discontinuity):
+            return (self.height*x) - (self.height*self.discontinuity)
+
+
+
+# Class to handle integration of discrete functions.
+
+class DiscreteFunction():
+
+    # Initialise with a list of discrete points in the form [[x1,y1], [x2,y2]...]
+
+    def __init__(self, _points):
+
+        self.points = _points
+        #self.initial_coordinate = [0,0]
+
+    # Define the first derivative as the value of y at each x points.
+    # Takes argument of coordinates list in form [x,y]
+    # Last argument __i[0] is mutable variable to enumerate each set of coordinates
+    # and keep track of how many times the function's been called.
+
+    def first_derivative(self, coordinates, __i =[0]):
+
+
+        #print __i[0]
+
+        coordinates = self.points # Set coordinates to the list of points.
+
+        #print("COORDINATES: {0}".format(coordinates))
+
+        y = coordinates[__i[0]][1] # Get y coordinate from list element
+        #print("Y::::{0}".format(y))
+
+        __i[0]+=1 # Increase the counter by 1 each call
+
+        #print("LEN COORD: {0}".format(len(coordinates)))
+
+        # Reset the counter to zero at the end of the list of coordinates.
+        if (__i[0] == len(coordinates)):
+            __i[0]=0
+            #print("REACHED END")
+
+        return y
+
+    # Return the initial coordinates using the first set of points in the list.
+
+    def initial_value(self):
+        return self.points[0]
 
 
 class pn_junction():
@@ -206,25 +336,26 @@ class pn_junction():
 
         #print("Centre = {0}, width = {1}, height = {2}".format(self.center, self.width, self.height))
 
-        charge_distribution = 0
+
         x = coordinates[0]
 
-        #print("Point: {0}".format(x))
+        print("Point: {0}".format(x))
 
-        if ((x > (self.center-half_width)) and (x < self.center)):
-            charge_distribution = self.height
+        if (x < (self.center-half_width)):
+            return 0.0
 
-            #print("1-2: {0}".format(charge_distribution))
+        if ((x >= (self.center-half_width)) and (x <= self.center)):
+            return self.height
 
-        if ((x > self.center) and (x < (self.center+half_width))):
-            charge_distribution = -1.0*self.height
 
-        if ((x == self.center - half_width) or (x == self.center+half_width)):
-            charge_distribution = 0.5
+        if ((x >= self.center) and (x <= (self.center+half_width))):
+            return -1.0*self.height
 
-            #print("2-3: {0}".format(charge_distribution))
+        if (x > (self.center+half_width)):
+            return 0.0
 
-        return charge_distribution
+
+
 
 
     def initial_value(self):
@@ -238,18 +369,13 @@ class pn_junction():
 
         y = 0
 
-        if ((x > (self.center-half_width)) and (x < self.center)):
+        if ((x >= (self.center-half_width)) and (x < self.center)):
             y = self.height
 
-            #print("1-2: {0}".format(y))
 
-        if ((x > self.center) and (x < (self.center+half_width))):
+
+        if ((x > self.center) and (x <= (self.center+half_width))):
             y = -1.0*self.height
-
-        if ((x == self.center-half_width) or x == self.center+half_width):
-            y = 0.5
-
-            #print("2-3: {0}".format(y))
 
         return y
 
@@ -259,7 +385,7 @@ class pn_junction():
 
         y = 0.0
 
-        if ((x > (self.center-half_width)) and (x < self.center)):
+        if ((x >= (self.center-half_width)) and (x < self.center)):
 
             y = x - (self.center-half_width)
 
@@ -267,69 +393,9 @@ class pn_junction():
 
             y = self.height
 
-        if ((x > self.center) and (x < self.center + half_width)):
+        if ((x > self.center) and (x <= self.center + half_width)):
 
             y = (-1.0 * x) + (self.center+half_width)
 
 
         return y
-
-
-class HeavisideFunction():
-
-    def __init__(self, _discontinuity = 0.0 , _height = 1.0):
-
-        self.discontinuity = _discontinuity
-        self.height = _height
-        self.initial_coordinate = [0.0,0.0]
-
-    def first_derivative(self, coordinates):
-
-        x = coordinates[0]
-
-        if (x < self.discontinuity):
-            y = 0.0
-
-        if (x > self.discontinuity):
-            y = self.height
-
-        if (x == self.discontinuity):
-            y = self.height/2.0
-
-        return y
-
-
-    def initial_value(self):
-        return self.initial_coordinate
-
-
-    def set_initial_coordinate(self, new_coordinate):
-        self.initial_coordinate = new_coordinate
-
-
-
-class DiscreteFunction():
-
-    def __init__(self, _points):
-
-        self.points = _points
-        #self.initial_coordinate = [0,0]
-
-    def first_derivative(self, coordinates, i =[0]):
-
-
-        print i[0]
-        coordinates = self.points
-        #print("COORDINATES: {0}".format(coordinates))
-        y = coordinates[i[0]][1]
-        print("Y::::{0}".format(y))
-        i[0]+=1
-        #print("LEN COORD: {0}".format(len(coordinates)))
-        if (i[0] == len(coordinates)):
-            i[0]=0
-            print("REACHED END")
-
-        return y
-
-    def initial_value(self):
-        return self.points[0]
