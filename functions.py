@@ -203,17 +203,19 @@ def secant_find_root(function, x_lower, x_upper, n_steps, accuracy):
     return roots
 
 
-def brent_find_roots(function, x_lower, x_upper, n_steps, accuracy):
+def brent_find_root(function, x_lower, x_upper, n_steps, accuracy):
 
     root_boundaries = find_root_boundaries(function, x_lower, x_upper, n_steps)
     roots = []
 
-    max_iterations = 1000000
+    max_iterations = 1000
 
     for i in range(len(root_boundaries)):
 
         x1 = root_boundaries[i][0]
         x2 = root_boundaries[i][1]
+
+        #print("{0}, {1}".format(root_boundaries[i][0], root_boundaries[i][1]))
 
         x3 = x1
 
@@ -226,8 +228,10 @@ def brent_find_roots(function, x_lower, x_upper, n_steps, accuracy):
             y1 = function.evaluate(x1)
             y2 = function.evaluate(x2)
             y3 = function.evaluate(x3)
+            #print("y1 = {0}, y2 = {1}, y3 = {2}".format(y1, y2, y3))
+            #print("x1 = {0}, x2 = {1}, x3 = {2}".format(x1, x2, x3))
 
-            if (y1 != y3 and y2 != y3):
+            if ((y1 != y3) and (y2 != y3)):
 
                 quad1 = (x1*y2*y3)/((y1-y2)*(y1-y3))
                 quad2 = (x2*y1*y3)/((y2-y1)*(y2-y3))
@@ -287,7 +291,9 @@ def brent_find_roots(function, x_lower, x_upper, n_steps, accuracy):
 
             iteration_number += 1
 
-            if (np.sign(y_solution) == y1):
+            if (np.sign(y_solution) == np.sign(y1)):
                 x1 = solution
             else:
                 x2 = solution
+
+    return roots
