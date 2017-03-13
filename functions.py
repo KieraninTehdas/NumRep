@@ -245,6 +245,13 @@ def secant_find_root(function, x_lower, x_upper, n_steps, accuracy):
             y1 = function.evaluate(x1)
             y2 = function.evaluate(x2)
 
+            # Make sure quotient doesn't blow up!
+
+            if (abs((y1-y2)) < 0.0000001):
+                return "Function does not converge!"
+                break
+
+
             x3 = x2 - (y2*((x1-x2)/(y1-y2)))
 
             if (abs(function.evaluate(x3)) < accuracy):
@@ -299,6 +306,9 @@ def brent_find_root(function, x_lower, x_upper, n_steps, accuracy):
             y3 = function.evaluate(x3)
             #print("y1 = {0}, y2 = {1}, y3 = {2}".format(y1, y2, y3))
             #print("x1 = {0}, x2 = {1}, x3 = {2}".format(x1, x2, x3))
+
+
+
 
             # If the function evaluated at the points isn't all the same, use inverse quadratic interpolation
 
