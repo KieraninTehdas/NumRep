@@ -1,6 +1,10 @@
+# Class holding different functions (exp, polynomial etc) and root finding methods (bisection, newton-raphson, secant, and Brent
+
 import numpy as np
 import math as mt
 
+# Polynomial function
+# Functions fo give the value of y from given x, and give first derivative at given x
 
 class Polynomial():
 
@@ -25,6 +29,8 @@ class Polynomial():
 
         return derivative
 
+# Exponential function
+
 class Exponential():
 
     def __init__(self, k = 1.0, c = 1.0):
@@ -41,6 +47,7 @@ class Exponential():
 
         return self.k*np.exp(self.k*x)
 
+# Product of sine and cos function
 
 class SinusoidalProduct():
 
@@ -60,6 +67,29 @@ class SinusoidalProduct():
         return self.k1*-1.0*np.sin(self.k1*x)*np.sin(self.k2*x) + np.cos(self.k1*x)*self.k2*np.cos(self.k2*x)
 
 
+class OneOverX():
+
+    def __init__(self, k = 0.0):
+
+        self.k = k
+            
+
+
+    def evaluate(self, x):
+
+        return 1.0/(x+self.k)
+
+
+    def first_derivative(self, x):
+
+        return -1.0/(x+self.k)**2
+
+
+
+
+
+# Function to bracket roots
+# n_steps is the separation between the linearly spaced points
 
 def find_root_boundaries(function, x_lower, x_upper, n_steps):
 
@@ -72,12 +102,15 @@ def find_root_boundaries(function, x_lower, x_upper, n_steps):
         y1 = function.evaluate(points[i])
         y2 = function.evaluate(points[i+1])
 
+        # Check if the sign of the function evaluated at x1 = sign of function at x2
+
         if (np.sign(y1) != np.sign(y2)):
 
             roots.append([points[i], points[i+1]])
 
     return roots
 
+# Implement bisection method
 
 def bisection_find_root(function, x_lower, x_upper, n_steps, accuracy):
 
@@ -85,7 +118,7 @@ def bisection_find_root(function, x_lower, x_upper, n_steps, accuracy):
     root_boundaries = find_root_boundaries(function, x_lower, x_upper, n_steps)
     roots = []
 
-    max_iterations = 1000000
+    max_iterations = 1000000 # Set max iterations, so don't end up in infinite loop...
 
     if (len(root_boundaries) == 0):
         return "No solutions found in specified range."
@@ -93,6 +126,8 @@ def bisection_find_root(function, x_lower, x_upper, n_steps, accuracy):
     for i in range(len(root_boundaries)):
 
         iteration_number = 0
+
+        # Get the upper and lower brackets around the root
 
         x_lower = root_boundaries[i][0]
         x_upper = root_boundaries[i][1]
@@ -108,6 +143,8 @@ def bisection_find_root(function, x_lower, x_upper, n_steps, accuracy):
 
             iteration_number += 1
 
+            # If sign of the function evaluated at centre is same as upper/lower bound, replace bound wwith center
+
             if (np.sign(function.evaluate(x_center)) == np.sign(function.evaluate(x_lower))):
                 x_lower = x_center
 
@@ -121,6 +158,8 @@ def bisection_find_root(function, x_lower, x_upper, n_steps, accuracy):
     return roots
 
 
+# Implementation of the Newton-Raphson method
+
 def Newton_Raphson_find_root(function, x_lower, x_upper, n_steps, accuracy):
 
     root_boundaries = find_root_boundaries(function, x_lower, x_upper, n_steps)
@@ -129,6 +168,10 @@ def Newton_Raphson_find_root(function, x_lower, x_upper, n_steps, accuracy):
 
 
     max_iterations = 1000000
+
+    if (len(root_boundaries) == 0):
+        return "No solutions found in specified range."
+
 
     for i in range(len(root_boundaries)):
 
@@ -145,7 +188,9 @@ def Newton_Raphson_find_root(function, x_lower, x_upper, n_steps, accuracy):
 
         while (iteration_number < max_iterations):
             y = function.evaluate(x0)
-            y_prime = function.first_derivative(x0)
+            y_prime = function.first_derivative(x0) # Evaluate the first derivative at x
+
+            # Escape if derivative becomes too small, to avoid divergence
 
             if (abs(y_prime) < 0.0000001):
                 print("Does not converge!")
@@ -165,9 +210,13 @@ def Newton_Raphson_find_root(function, x_lower, x_upper, n_steps, accuracy):
             x0 = x1
             iteration_number += 1
 
+        if (iteration_number == max_iterations-1):
+                print("Did not find root in specified range within {0} iterations...".format(max_iterations))
+
     return roots
 
 
+# Function to implement the secant method of root finding
 
 def secant_find_root(function, x_lower, x_upper, n_steps, accuracy):
 
@@ -176,7 +225,15 @@ def secant_find_root(function, x_lower, x_upper, n_steps, accuracy):
 
     max_iterations = 1000000
 
+
+    if (len(root_boundaries) == 0):
+        return "No solutions found in specified range."
+
+
     for i in range(len(root_boundaries)):
+
+
+        # Set bracketed regions
 
         x1 = root_boundaries[i][0]
         x2 = root_boundaries[i][1]
@@ -200,15 +257,25 @@ def secant_find_root(function, x_lower, x_upper, n_steps, accuracy):
 
             iteration_number += 1
 
+    if (iteration_number == max_iterations-1):
+                print("Did not find root in specified range within {0} iterations...".format(max_iterations))
+
+
+
     return roots
 
+# Function to implement Brent's hybrid method
 
 def brent_find_root(function, x_lower, x_upper, n_steps, accuracy):
 
     root_boundaries = find_root_boundaries(function, x_lower, x_upper, n_steps)
     roots = []
 
-    max_iterations = 1000
+    max_iterations = 1000000
+
+    if (len(root_boundaries) == 0):
+        return "No solutions found in specified range."
+
 
     for i in range(len(root_boundaries)):
 
@@ -217,10 +284,12 @@ def brent_find_root(function, x_lower, x_upper, n_steps, accuracy):
 
         #print("{0}, {1}".format(root_boundaries[i][0], root_boundaries[i][1]))
 
-        x3 = x1
+        x3 = x1 # Previous iterate, set to lower bound for first iteration
 
         iteration_number = 0
 
+        # Boolean flag to see if the last iteration used the bisection method
+        # Set true for fist iteration
         isLastIterationBisection = True
 
         while (iteration_number < max_iterations):
@@ -231,6 +300,8 @@ def brent_find_root(function, x_lower, x_upper, n_steps, accuracy):
             #print("y1 = {0}, y2 = {1}, y3 = {2}".format(y1, y2, y3))
             #print("x1 = {0}, x2 = {1}, x3 = {2}".format(x1, x2, x3))
 
+            # If the function evaluated at the points isn't all the same, use inverse quadratic interpolation
+
             if ((y1 != y3) and (y2 != y3)):
 
                 quad1 = (x1*y2*y3)/((y1-y2)*(y1-y3))
@@ -238,11 +309,15 @@ def brent_find_root(function, x_lower, x_upper, n_steps, accuracy):
                 quad3 = (x3*y1*y2)/((y3-y1)*(y3-y2))
 
                 solution = quad1 + quad2 + quad3
+               
+            # Else, use the secant method
 
             else:
 
                 solution = x2 - (y2*((x2-x1)/(y2-y1)))
+                
 
+            #If any of the following evaluate true, bisection method is used
 
             # If current solution isn't in desired range, use bisection method
             if ((solution > ((3*x1+x2)/4)) and (solution < x2)):
@@ -270,15 +345,19 @@ def brent_find_root(function, x_lower, x_upper, n_steps, accuracy):
             else:
                 condition5 = False
 
+            # If any of above conditions true, use bisection
+
             if ((condition1) or (condition2) or (condition3) or (condition4) or (condition5)):
+
+                # Use bisection and set the bool flag to true for next iteration
 
                 solution = (x1+x2)/2.0
                 isLastIterationBisection = True
-
+                
             else:
 
                 isLastIterationBisection = False
-
+               
             y_solution = function.evaluate(solution)
 
             if(abs(y_solution)<abs(accuracy)):
