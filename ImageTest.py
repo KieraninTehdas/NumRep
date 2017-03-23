@@ -51,21 +51,22 @@ def cross_correlate(line1, line2):
 
     correlation = np.fft.ifft(fourier_space_correlation)
 
-    # Find the index of the position of the maximum of the cross correlation power spectrum.
+    # Find the index of the position of the maximum of the cross correlation 
+    # power spectrum.
     # This is the phase of the correlation.
 
     phase = np.argmax(correlation)
 
     return phase
 
-#############################################################################################
-#############################################################################################
+#############################################################################
+#############################################################################
 
 def main():
 
     # Name of image to be read. "image" is original image, used for comparison.
 
-    image_name = "desync2.pgm"
+    image_name = "desync1.pgm"
 
     image = read_image(image_name)
 
@@ -78,7 +79,7 @@ def main():
     for i in range(0, len(corrected_image)-2):
 
         # This block is just to show a progress bar, so it's obvious something is happening.
-        # Can be commented out if required. Shouldn't cause problems!
+        # Can be commented out if required. Shouldn't affect actual functionality...
         progress = 10*i/(len(corrected_image)-3)
         sys.stdout.write('\r')
         sys.stdout.write("Correlating lines [%-10s] %d%%" % ('='*progress, 10*progress))
