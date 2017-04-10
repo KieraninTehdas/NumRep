@@ -179,7 +179,7 @@ def main():
 
     # Number of data points per run and number of runs.
     n_points = 10000
-    n_repeats = 2
+    n_repeats = 10
 
 
     # Initialise a lifetime simulation with best fit parameters.
@@ -248,6 +248,8 @@ def main():
     #print(len(simulated_data))
 
     plt.figure(1)
+    fig = plt.figure()
+    fig.patch.set_facecolor('white')
     plt.subplot(211)
     ax = plt.subplot(211)
     ax.set_title("Lifetime measurements")
@@ -262,7 +264,10 @@ def main():
     plt.scatter(data, g)
     plt.show()
 
+    plt.figure(1)
     plt.subplot(311)
+    fig = plt.figure()
+    fig.patch.set_facecolor('white')
     ax = plt.subplot(311)
     ax.set_xlabel("Parameter f value")
     ax.set_ylabel("Negative Log Likelihood")
@@ -280,6 +285,8 @@ def main():
     plt.show()
 
     plt.figure(1)
+    fig = plt.figure()
+    fig.patch.set_facecolor('white')
     plt.subplot(211)
     ax = plt.subplot(211)
     ax.set_title("Lifetime measurements")
